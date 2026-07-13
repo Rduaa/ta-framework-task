@@ -1,0 +1,64 @@
+name: TA Framework Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    name: Regression Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Run regression tests
+        run: >
+          mvn -B clean test
+          -Denvironment=local
+          -Dbrowser=chrome
+          -Dheadless=true
+          -DsuiteXmlFile=src/test/resources/suites/regression.xml
+
+      - name: Add test results to job summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## Test results" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -d target/surefire-reports ]; then
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            find target/surefire-reports -maxdepth 1 -name "*.txt" -type f -exec cat {} \; >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Surefire reports were not created." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: regression-test-artifacts
+          path: |
+            target/surefire-reports/
+            target/logs/
+            target/screenshots/
+          if-no-files-found: warn
+          retention-days: 14
