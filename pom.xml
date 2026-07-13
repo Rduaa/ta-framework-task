@@ -1,11 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.epam.selenium</groupId>
-  <artifactId>selenium-webdriver-task</artifactId>
+  <artifactId>ta-framework-task</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <properties>
@@ -13,18 +14,24 @@
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <selenium.version>4.27.0</selenium.version>
-    <testng.version>7.10.2</testng.version>
-    <webdrivermanager.version>5.9.2</webdrivermanager.version>
+    <selenium.version>4.44.0</selenium.version>
+    <testng.version>7.12.0</testng.version>
+    <webdrivermanager.version>6.3.4</webdrivermanager.version>
+    <log4j.version>2.26.1</log4j.version>
+
+    <!-- Default suite. Can be overridden from command line -->
+    <suiteXmlFile>testng.xml</suiteXmlFile>
   </properties>
 
   <dependencies>
+    <!-- Selenium WebDriver -->
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
       <version>${selenium.version}</version>
     </dependency>
 
+    <!-- Test runner -->
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
@@ -32,10 +39,32 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Automatic browser driver management -->
     <dependency>
       <groupId>io.github.bonigarcia</groupId>
       <artifactId>webdrivermanager</artifactId>
       <version>${webdrivermanager.version}</version>
+    </dependency>
+
+    <!-- Log4j2 API -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+
+    <!-- Log4j2 implementation -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+
+    <!-- Redirects SLF4J logs from libraries to Log4j2 -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
+      <version>${log4j.version}</version>
     </dependency>
   </dependencies>
 
@@ -45,9 +74,10 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
+
         <configuration>
           <suiteXmlFiles>
-            <suiteXmlFile>testng.xml</suiteXmlFile>
+            <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
           </suiteXmlFiles>
         </configuration>
       </plugin>
